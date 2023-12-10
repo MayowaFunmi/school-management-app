@@ -46,7 +46,7 @@ export const loginUser = async (req: Request, res: Response) => {
             { expiresIn: '30m'}
         );
 
-        res.status(200).json({ messgae: "user signed in successfully", accessToken: accessToken})
+        res.status(200).json({ messgae: "user signed in successfully", data: accessToken})
     } catch (error) {
         console.error('Error signing in:', error);
         res.status(500).json({ message: 'Internal server error.' });

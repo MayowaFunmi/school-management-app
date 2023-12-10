@@ -23,7 +23,7 @@ app.use('/api/users', usersRoutes)
 
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
-const MONGO_URL = process.env.DATABASE_URL || 'mongodb+srv://akinademayowa:typescript@cluster0.elu9orm.mongodb.net/';
+const MONGO_URL: string = process.env.DATABASE_URL || 'mongodb+srv://akinademayowa:typescript@cluster0.elu9orm.mongodb.net/';
 server.listen(PORT, () => {
     console.log(`server running on port ${PORT}`)
 });
