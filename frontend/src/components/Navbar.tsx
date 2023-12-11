@@ -1,8 +1,11 @@
 // Navbar.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAppSelector } from '../hooks/useTypedSelector';
 
 const Navbar: React.FC = () => {
+  const { isAuthenticated } = useAppSelector((state) => state.user);
+
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
@@ -12,26 +15,36 @@ const Navbar: React.FC = () => {
         </button>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <Link className="nav-link active" to="/">Home</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/signup">Sign Up</Link>
-            </li>
-            <li className="nav-item dropdown">
-              <Link className="nav-link dropdown-toggle" to="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Dropdown
-              </Link>
-              <ul className="dropdown-menu">
-                <li><Link className="dropdown-item" to="#">Action</Link></li>
-                <li><Link className="dropdown-item" to="#">Another action</Link></li>
-                <li><hr className="dropdown-divider" /></li>
-                <li><Link className="dropdown-item" to="#">Something else here</Link></li>
-              </ul>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="#">Disabled</Link>
-            </li>
+            {isAuthenticated ? (
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link active" to="/list">List</Link>
+                </li>
+
+                <li className="nav-item dropdown">
+                  <Link className="nav-link dropdown-toggle" to="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Dropdown
+                  </Link>
+                  <ul className="dropdown-menu">
+                    <li><Link className="dropdown-item" to="#">Action</Link></li>
+                    <li><Link className="dropdown-item" to="#">Another action</Link></li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li><Link className="dropdown-item" to="#">Something else here</Link></li>
+                  </ul>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/signup">Sign Up</Link>
+                </li>
+                
+                <li className="nav-item">
+                  <Link className="nav-link" to="#">Disabled</Link>
+                </li>
+              </>
+            )}
+            
           </ul>
           <form className="d-flex" role="search">
             <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />

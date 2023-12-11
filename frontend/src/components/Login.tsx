@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { loginUser } from '../features/userSlice';
 import { useAppDispatch, useAppSelector } from '../hooks/useTypedSelector';
@@ -16,7 +16,8 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
 
   const dispatch = useAppDispatch();
-  //const { isAuthenticated, loading, message } = useAppSelector((state) => state.user)
+  const { message } = useAppSelector((state) => state.user);
+const navigate = useNavigate();
 
   const notifyError = (msg: string) => toast.error(msg);
   const notifySuccess = (msg: string) => toast.success(msg);
@@ -34,10 +35,14 @@ const Login: React.FC = () => {
         username, password
       };
       dispatch(loginUser(userCredentials));
+	  notifySuccess(message);
+	  navigate('/');
     } catch (error) {
       console.log("error = ", error)
+	  notifyError(message);
     }
   }
+
   return (
     <div style={backgroundImages}>
       <div className='container'>

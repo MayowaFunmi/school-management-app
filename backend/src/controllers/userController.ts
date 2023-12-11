@@ -28,10 +28,10 @@ export const loginUser = async (req: Request, res: Response) => {
     try {
         const { username, password } = req.body;
         const user = await User.findOne({ username });
+
         if (!user) {
             return res.status(401).json({ message: 'Invalid username or password.' });
         };
-
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
             return res.status(401).json({ message: 'Invalid username or password.' });
@@ -46,7 +46,7 @@ export const loginUser = async (req: Request, res: Response) => {
             { expiresIn: '30m'}
         );
 
-        res.status(200).json({ messgae: "user signed in successfully", data: accessToken})
+        res.status(200).json({ message: "user signed in successfully", data: accessToken})
     } catch (error) {
         console.error('Error signing in:', error);
         res.status(500).json({ message: 'Internal server error.' });

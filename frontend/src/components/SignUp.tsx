@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import baseUrl from '../config/Config';
+import { baseUrl } from '../config/Config';
 
 const SignUp: React.FC = () => {
   const backgroundImages = {
@@ -40,7 +40,7 @@ const SignUp: React.FC = () => {
     }
 
     try {
-      const result = await axios.post(`${baseUrl}/users/register-user`, {
+      const result = await axios.post(`${baseUrl}/api/users/register-user`, {
         username, firstName, lastName, email, password
       })
       if (result.status === 200) {
