@@ -9,8 +9,6 @@ interface UserState {
   status: string,
   message: string,
   token: string,
-  username: string,
-  password: string
 }
   
 const initialState: UserState = {
@@ -19,8 +17,6 @@ const initialState: UserState = {
   status: "",
   message: "",
   token: localStorage.getItem("user") || "",
-  username: "",
-  password: ""
 };
 
 export const loginUser = createAsyncThunk(
@@ -61,14 +57,14 @@ const userSlice = createSlice({
         .addCase(loginUser.fulfilled, (state, action: PayloadAction<any>) => {
           if (action.payload) {
             const data = action.payload;
-            console.log('data = ', data);
+            
             return {
               ...state,
               isAuthenticated: true,
               message: data.message,
               token: data.data,
               status: "success",
-              loading: false
+              loading: false,
             }
           }
         })
