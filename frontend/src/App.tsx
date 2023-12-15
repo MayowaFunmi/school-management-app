@@ -7,29 +7,23 @@ import 'react-toastify/dist/ReactToastify.css';
 import SignUp from './components/SignUp';
 import Login from './components/Login';
 import List from './components/List';
-import { useAppSelector } from './hooks/useTypedSelector';
+import { AuthProvider } from './context/AuthContext';
 
 const App: React.FC = () => {
-  const { isAuthenticated } = useAppSelector((state) => state.user);
 
   return (
-    <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route path='/' element={<Home />} />
-        {isAuthenticated ? (
-          <>
-            <Route path='/list' element={<List />} />
-          </>
-        ) : (
-          <>
-            <Route path='/signup' element={<SignUp />} />
-            <Route path='/login' element={<Login />} />
-          </>
-        )}
-      </Routes>
-      <ToastContainer theme="dark" />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/list' element={<List />} />
+          <Route path='/signup' element={<SignUp />} />
+          <Route path='/login' element={<Login />} />
+        </Routes>
+        <ToastContainer theme="dark" />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

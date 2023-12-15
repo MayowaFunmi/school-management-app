@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { baseUrl } from '../config/Config';
 import UserLogin from "../models/userModel";
 
@@ -24,17 +24,32 @@ export const loginUser = createAsyncThunk(
   async (data: object, thunkApi) => {
     try {
       const request = await axios.post<UserLogin>(`${baseUrl}/api/users/signin`, data)
-      console.log(request)
       const response = request.data;
       localStorage.setItem("user", JSON.stringify(response.data));
       return response;
     } catch (error: any) {
-      console.error(error);
       return thunkApi.rejectWithValue(error.message);
     }
   }
 )
 
+export const getRefreshToken = createAsyncThunk(
+  'user/getRefreshToken',
+  async (data: string, thunkApi) => {
+    try {
+      const axiosConfig: AxiosRequestConfig = {
+        headers: {
+            Authorization: `Bearer ${data}`,
+        }
+      };
+      const response = await axios.post(`${baseUrl}/api/users/refresh-token`, axiosConfig);
+      localStorage.setItem("user", JSON.stringify(response.data));
+      return response.data;
+    } catch (error: any) {
+      return thunkApi.rejectWithValue(error.message);
+    }
+  }
+)
 const userSlice = createSlice({
     name: 'user',
     initialState,
@@ -52,7 +67,7 @@ const userSlice = createSlice({
     extraReducers: (builder) => {
       builder
         .addCase(loginUser.pending, (state) => {
-          return { ...state, loading: true, message: "pending" };
+          return { ...state, loading: true, status: "pending", message: "Please wait ..." };
         })
         .addCase(loginUser.fulfilled, (state, action: PayloadAction<any>) => {
           if (action.payload) {
@@ -70,11 +85,32 @@ const userSlice = createSlice({
         })
         .addCase(loginUser.rejected, (state, action: PayloadAction<any>) => {
           const data = action.payload;
-          console.log(`rejected data = ${data}`)
           return {
             ...state, message: data.message, status: "rejected"
           }
+        });
+      builder
+        .addCase(getRefreshToken.pending, (state) => {
+          return { ...state };
         })
+        .addCase(getRefreshToken.fulfilled, (state, action: PayloadAction<any>) => {
+          if (action.payload) {
+            const data = action.payload;
+            
+            return {
+              ...state,
+              isAuthenticated: true,
+              token: data,
+              loading: false,
+            }
+          }
+        })
+        .addCase(getRefreshToken.rejected, (state, action: PayloadAction<any>) => {
+          const data = action.payload;
+          return {
+            ...state, message: data.message, status: "rejected"
+          }
+        });
     }
 })
 

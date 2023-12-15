@@ -3,7 +3,14 @@ import { allUsers, createUser } from "../services/userServices";
 import bcrypt from 'bcrypt';
 import { ExtendedRequest } from '../middleware/isAuthenticated';
 import { User } from '../models/userModel';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+
+interface DecodedToken {
+    userId: string;
+    roles: string[];
+    iat: number;
+    exp: number;
+}
 
 export const registerUser = async (req: Request, res: Response) => {
     try {
@@ -43,7 +50,7 @@ export const loginUser = async (req: Request, res: Response) => {
                 userId: user._id, roles: user.roles
             },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '30m'}
+            { expiresIn: '1m'}
         );
 
         res.status(200).json({ message: "user signed in successfully", data: accessToken})
@@ -53,16 +60,46 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 }
 
+// export const refreshToken = async (req: ExtendedRequest, res: Response) => {
+//     const newAccessToken = jwt.sign(
+//         {
+//             userId: req.user.userId, roles: req.user.roles
+//         },
+//         process.env.ACCESS_TOKEN_SECRET,
+//         { expiresIn: '30m'}
+//     );
+//     return res.status(200).json({ newAccessToken: newAccessToken })
+// }
+
 export const refreshToken = async (req: ExtendedRequest, res: Response) => {
-    const newAccessToken = jwt.sign(
-        {
-            userId: req.user.userId, roles: req.user.roles
-        },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: '30m'}
-    );
-    return res.status(200).json({ newAccessToken: newAccessToken })
-}
+    const token = req.headers.authorization;
+
+    if (!token) {
+        return res.status(400).json({ message: 'Access token not provided.' });
+    }
+
+    try {
+        // Decode the token without verification
+        const decoded = jwt.decode(token.replace('Bearer ', ''));
+
+        if (decoded) {
+            // Extract user information from the decoded payload
+            const { userId, roles } = decoded as DecodedToken;
+            console.log(`user id = ${userId} and roles = ${roles}`)
+            const newAccessToken = jwt.sign(
+                { userId, roles },
+                process.env.ACCESS_TOKEN_SECRET,
+                { expiresIn: '30m' }
+            );
+
+            return res.status(200).json({ newAccessToken });
+        } else {
+            return res.status(401).json({ message: 'User not authenticated.' });
+        }
+    } catch (error) {
+        return res.status(401).json({ message: 'User not authenticated.', data: error });
+    }
+};
 
 export const listUsers = async (req: ExtendedRequest, res: Response) => {
     try {

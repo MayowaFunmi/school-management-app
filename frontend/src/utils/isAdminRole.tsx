@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios";
 
 interface Data {
-    _id: string,
+    _id: object,
     roleName: string,
     createdAt: string;
     updatedAt: string;
@@ -24,13 +24,11 @@ export const isAdminRole = async ({ roleIds }: Props, rolesEndpoint: string, tok
             }
         }
         const response = await axios.get<Role>(rolesEndpoint, axiosConfig);
-        console.log(`api response = ${response}`)
         const roles = response.data.data;
 
-        const isAdminRoleExists = roles.some((role) => roleIds.includes(role._id) && role.roleName === "ADMIN");
+        const isAdminRoleExists = roles.some((role) => roleIds.includes(role._id.toString()) && role.roleName === "ADMIN" || role.roleName === "OWNER" );
         return isAdminRoleExists;
     } catch (error) {
-        console.error('Error fetching roles:', error);
         return false;
     }
 }

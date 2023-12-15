@@ -8,6 +8,6 @@ const router = express.Router();
 router.post('/register-user', registerUser);
 router.post('/signin', loginUser);
 router.get('/all-users', verifyLogin, checkOwnerRole, listUsers);
-router.post('/refresh-token', verifyLogin, refreshToken);
+router.post('/refresh-token', refreshToken);
 
 export default router;
