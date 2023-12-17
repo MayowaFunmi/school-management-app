@@ -1,13 +1,25 @@
 // Navbar.tsx
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useAppDispatch } from '../hooks/useTypedSelector';
+import { clearUserData, logoutUser } from '../features/userSlice';
 
 const Navbar: React.FC = () => {
-
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { isAuthenticated, isAdminRoleExists } = useAuth();
 
-  console.log(`admin user? = ${isAdminRoleExists}`);
+  const logOutUser = async () => {
+    try {
+      await dispatch(logoutUser());
+      dispatch(clearUserData())
+      navigate('/')
+    } catch (error) {
+      
+    }
+  }
+
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
@@ -39,7 +51,7 @@ const Navbar: React.FC = () => {
                 ) : null}
                 
                 <li className="nav-item">
-                  <Link className="nav-link" to="#">Logout</Link>
+                  <button className='btn btn-danger' onClick={() => logOutUser()}>Logout</button>
                 </li>
               </>
             ) : (

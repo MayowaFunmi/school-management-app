@@ -26,7 +26,7 @@ export const isAdminRole = async ({ roleIds }: Props, rolesEndpoint: string, tok
         const response = await axios.get<Role>(rolesEndpoint, axiosConfig);
         const roles = response.data.data;
 
-        const isAdminRoleExists = roles.some((role) => roleIds.includes(role._id.toString()) && role.roleName === "ADMIN" || role.roleName === "OWNER" );
+        const isAdminRoleExists = roles.some((role) => roleIds.includes(role._id.toString()) && (role.roleName === "ADMIN" || role.roleName === "OWNER") );
         return isAdminRoleExists;
     } catch (error) {
         return false;

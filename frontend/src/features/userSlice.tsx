@@ -33,6 +33,17 @@ export const loginUser = createAsyncThunk(
   }
 )
 
+export const logoutUser = createAsyncThunk(
+  'user/logoutUser',
+  async(_, thunkApi) => {
+    try {
+      localStorage.removeItem("user")
+    } catch (error: any) {
+      return thunkApi.rejectWithValue(error.message);
+    }
+  }
+)
+
 export const getRefreshToken = createAsyncThunk(
   'user/getRefreshToken',
   async (data: string, thunkApi) => {
@@ -62,6 +73,10 @@ const userSlice = createSlice({
           state.status = "success";
           state.message = "You are already logged in"
         }
+      },
+
+      clearUserData: (state) => {
+        return { ...initialState };
       }
     },
     extraReducers: (builder) => {
@@ -111,8 +126,19 @@ const userSlice = createSlice({
             ...state, message: data.message, status: "rejected"
           }
         });
+
+      builder
+        .addCase(logoutUser.fulfilled, (state) => {
+          state.isAuthenticated = false;
+          state.loading = false;
+          state.status = "";
+          state.message = "";
+          state.status = "";
+          state.token = "";
+        })
     }
 })
 
+export const { clearUserData } = userSlice.actions;
 export const { initializeStateFromLocalStorage } = userSlice.actions;
 export default userSlice.reducer;

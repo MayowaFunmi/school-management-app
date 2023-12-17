@@ -1,9 +1,8 @@
 import React, { ReactNode, createContext, useContext, useEffect, useState } from "react"
-import { useAppDispatch, useAppSelector } from "../hooks/useTypedSelector";
+import { useAppSelector } from "../hooks/useTypedSelector";
 import { useJwt } from "react-jwt";
 import { baseUrl } from "../config/Config";
 import { isAdminRole } from "../utils/isAdminRole";
-import { getRefreshToken } from "../features/userSlice";
 
 interface AuthContextProps {
     isAuthenticated: boolean
@@ -31,14 +30,13 @@ export const AuthProvider: React.FC<{ children: ReactNode}> = ({ children }) => 
     const [isAdminRoleExists, setIsAdminRoleExists] = useState<boolean | null>(null);
 
     const { isAuthenticated, token, loading, message, status } = useAppSelector((state) => state.user);
-    const dispatch = useAppDispatch();
+    //const dispatch = useAppDispatch();
     const { decodedToken, isExpired } = useJwt(token);
-
-    useEffect(() => {
-        if(token && isExpired) {
-            dispatch(getRefreshToken(token));
-        };
-    }, [dispatch, isExpired, token])
+    // useEffect(() => {
+    //     if(token && isExpired) {
+    //         dispatch(getRefreshToken(token));
+    //     };
+    // }, [dispatch, isExpired, token])
 
     useEffect(() => {
         if (decodedToken) {
