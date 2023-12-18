@@ -9,7 +9,7 @@ const List = () => {
     return <Navigate to="/" />;
   }
   return (
-    <div>List</div>
+    <div>Main Content for Home</div>
   )
 }
 

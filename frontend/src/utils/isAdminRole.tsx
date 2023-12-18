@@ -32,3 +32,20 @@ export const isAdminRole = async ({ roleIds }: Props, rolesEndpoint: string, tok
         return false;
     }
 }
+
+export const isSuperAdminRole = async ({ roleIds }: Props, rolesEndpoint: string, token: string): Promise<boolean> => {
+    try {
+        const axiosConfig: AxiosRequestConfig ={
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        }
+        const response = await axios.get<Role>(rolesEndpoint, axiosConfig);
+        const roles = response.data.data;
+
+        const isSuperAdminRole = roles.some((role) => roleIds.includes(role._id.toString()) && (role.roleName === "SUPER ADMIN" || role.roleName === "OWNER") );
+        return isSuperAdminRole;
+    } catch (error) {
+        return false;
+    }
+}

@@ -1,9 +1,9 @@
 // Navbar.tsx
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useAppDispatch } from '../hooks/useTypedSelector';
-import { clearUserData, logoutUser } from '../features/userSlice';
+import { logoutUser } from '../features/userSlice';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -13,8 +13,7 @@ const Navbar: React.FC = () => {
   const logOutUser = async () => {
     try {
       await dispatch(logoutUser());
-      dispatch(clearUserData())
-      navigate('/')
+      navigate('/login')
     } catch (error) {
       
     }

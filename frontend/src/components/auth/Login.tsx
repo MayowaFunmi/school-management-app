@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { loginUser } from '../features/userSlice';
-import { useAppDispatch, useAppSelector } from '../hooks/useTypedSelector';
-import { useAuth } from '../context/AuthContext';
+import { useAppDispatch, useAppSelector } from '../../hooks/useTypedSelector';
+import { loginUser } from '../../features/userSlice';
+
 
 const Login: React.FC = () => {
   const backgroundImages = {
@@ -12,13 +12,11 @@ const Login: React.FC = () => {
     backgroundPosition: 'center',
     height: '100vh',
 	};
-
+	const navigate = useNavigate();
+	const { message, status, isAuthenticated } = useAppSelector((state) => state.user);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
   const dispatch = useAppDispatch();
-  const { message, status } = useAuth();
-	const navigate = useNavigate();
 
   const notifyError = (msg: string) => toast.error(msg);
   const notifySuccess = (msg: string) => toast.success(msg);
@@ -29,19 +27,25 @@ const Login: React.FC = () => {
     if (!username || !password ) {
       notifyError("None of the fields must be empty")
       return;
-    }
+  	}
 
     try {
       const userCredentials = {
         username, password
       };
       dispatch(loginUser(userCredentials));
-	  notifySuccess(message);
-	  navigate('/');
+			notifySuccess(message);
+			navigate('/');
     } catch (error) {
-	  notifyError(message);
+	  	notifyError(message);
     }
   }
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			navigate('/');
+		}	
+	}, [isAuthenticated, navigate])
 
   return (
     <div style={backgroundImages}>
