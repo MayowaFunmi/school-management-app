@@ -53,7 +53,8 @@ export const getRefreshToken = createAsyncThunk(
             Authorization: `Bearer ${data}`,
         }
       };
-      const response = await axios.post(`${baseUrl}/api/users/refresh-token`, axiosConfig);
+      const response = await axios.post(`${baseUrl}/api/users/refresh-token`, {}, axiosConfig);
+      console.log("new token = ", response.data)
       localStorage.setItem("user", JSON.stringify(response.data));
       return response.data;
     } catch (error: any) {
@@ -105,9 +106,9 @@ const userSlice = createSlice({
           }
         });
       builder
-        .addCase(getRefreshToken.pending, (state) => {
-          return { ...state };
-        })
+        // .addCase(getRefreshToken.pending, (state) => {
+        //   return { ...state };
+        // })
         .addCase(getRefreshToken.fulfilled, (state, action: PayloadAction<any>) => {
           if (action.payload) {
             const data = action.payload;
@@ -120,12 +121,12 @@ const userSlice = createSlice({
             }
           }
         })
-        .addCase(getRefreshToken.rejected, (state, action: PayloadAction<any>) => {
-          const data = action.payload;
-          return {
-            ...state, message: data.message, status: "rejected"
-          }
-        });
+        // .addCase(getRefreshToken.rejected, (state, action: PayloadAction<any>) => {
+        //   const data = action.payload;
+        //   return {
+        //     ...state, message: data.message, status: "rejected"
+        //   }
+        // });
 
       builder
         .addCase(logoutUser.fulfilled, (state) => {

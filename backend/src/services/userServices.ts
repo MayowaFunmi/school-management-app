@@ -38,7 +38,7 @@ export const allUsers = async () => {
 
 export const userByUniqueId = async (uniqueId: string) => {
     try {
-        const user = await User.findOne({ uniqueId });
+        const user = await User.findOne({ uniqueId }).populate('roles');
         return user;
     } catch (error) {
         console.error("Error creating user:", error);

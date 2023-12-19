@@ -18,7 +18,7 @@ interface Props {
 
 export const isAdminRole = async ({ roleIds }: Props, rolesEndpoint: string, token: string): Promise<boolean> => {
     try {
-        const axiosConfig: AxiosRequestConfig ={
+        const axiosConfig: AxiosRequestConfig = {
             headers: {
                 Authorization: `Bearer ${token}`,
             }

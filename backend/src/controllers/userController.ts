@@ -50,7 +50,7 @@ export const loginUser = async (req: Request, res: Response) => {
                 userId: user._id, roles: user.roles
             },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '1m'}
+            { expiresIn: '30m'}
         );
 
         res.status(200).json({ message: "user signed in successfully", data: accessToken})
@@ -73,34 +73,41 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const refreshToken = async (req: ExtendedRequest, res: Response) => {
     const token = req.headers.authorization;
-
+  
     if (!token) {
-        return res.status(400).json({ message: 'Access token not provided.' });
+      return res.status(400).json({ message: 'Access token not provided.' });
     }
-
+  
     try {
-        // Decode the token without verification
-        const decoded = jwt.decode(token.replace('Bearer ', ''));
-
-        if (decoded) {
-            // Extract user information from the decoded payload
-            const { userId, roles } = decoded as DecodedToken;
-            console.log(`user id = ${userId} and roles = ${roles}`)
-            const newAccessToken = jwt.sign(
-                { userId, roles },
-                process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: '30m' }
-            );
-
-            return res.status(200).json({ newAccessToken });
-        } else {
-            return res.status(401).json({ message: 'User not authenticated.' });
-        }
+      // Verify the token using the secret key
+      const decoded: any = jwt.verify(token.replace('Bearer ', ''), process.env.ACCESS_TOKEN_SECRET!);
+  
+      // Extract user information from the decoded payload
+      const { userId, roles } = decoded as DecodedToken;
+      console.log(`user id = ${userId} and roles = ${roles}`);
+  
+      // Generate a new access token
+      const newAccessToken = jwt.sign(
+        { userId, roles },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: '30m' }
+      );
+  
+      return res.status(200).json({ newAccessToken });
     } catch (error) {
+      // Handle token verification errors
+      console.error('Error refreshing token:', error);
+  
+      if (error instanceof jwt.TokenExpiredError) {
+        return res.status(401).json({ message: 'Token expired. Please reauthenticate.' });
+      } else if (error instanceof jwt.JsonWebTokenError) {
+        return res.status(401).json({ message: 'Invalid token. Please reauthenticate.' });
+      } else {
         return res.status(401).json({ message: 'User not authenticated.', data: error });
+      }
     }
-};
-
+  };
+  
 export const listUsers = async (req: ExtendedRequest, res: Response) => {
     try {
         const users = await allUsers();
@@ -113,8 +120,9 @@ export const listUsers = async (req: ExtendedRequest, res: Response) => {
 
 export const getUserByUniqueId = async (req: Request, res: Response) => {
     try {
-        const { uniqueId } = req.body;
-        const user = await userByUniqueId(uniqueId);
+        const { uniqueId } = req.query;
+        console.log(`uniqueId = ${req.body}`)
+        const user = await userByUniqueId(uniqueId as string);
         if (user) {
             return res.status(200).json({ message: "user retrieved successfully", data: user })
         } else {
