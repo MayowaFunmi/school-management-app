@@ -7,7 +7,7 @@ export const checkAdminRole = async (req: ExtendedRequest, res: Response, next: 
     const ownerRole = await RoleModel.findOne({ roleName: "OWNER"});
     const userRoles = req.user.roles;
 
-    if ((userRoles && userRoles.includes(adminRole._id.toString())) || userRoles.includes(ownerRole._id.toString())) {
+    if (userRoles && (userRoles.includes(adminRole._id.toString()) || userRoles.includes(ownerRole._id.toString()))) {
         next();
     } else {
         return res.status(403).json({ message: "Access denied"})
@@ -19,7 +19,7 @@ export const checkSuperAdminRole = async (req: ExtendedRequest, res: Response, n
     const ownerRole = await RoleModel.findOne({ roleName: "OWNER"});
     const userRoles = req.user.roles;
 
-    if ((userRoles && userRoles.includes(superAdminRole._id.toString())) || userRoles.includes(ownerRole._id.toString())) {
+    if (userRoles && (userRoles.includes(superAdminRole._id.toString()) || userRoles.includes(ownerRole._id.toString()))) {
         next();
     } else {
         return res.status(403).json({ message: "Access denied"})

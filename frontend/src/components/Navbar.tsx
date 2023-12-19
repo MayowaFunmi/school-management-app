@@ -8,7 +8,7 @@ import { logoutUser } from '../features/userSlice';
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isAuthenticated, isAdminRoleExists } = useAuth();
+  const { isAuthenticated, isSuperAdminRoleExists } = useAuth();
 
   const logOutUser = async () => {
     try {
@@ -20,57 +20,63 @@ const Navbar: React.FC = () => {
   }
 
   return (
-    <nav className="navbar navbar-expand-lg bg-body-tertiary">
-      <div className="container-fluid">
-        <Link className="navbar-brand" to="/">Navbar</Link>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            {isAuthenticated ? (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link active" to="/list">List</Link>
-                </li>
-                {isAdminRoleExists ? (
-                  <>
-                    <li className="nav-item dropdown">
-                      <Link className="nav-link dropdown-toggle" to="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown
-                      </Link>
-                      <ul className="dropdown-menu">
-                        <li><Link className="dropdown-item" to="#">Action</Link></li>
-                        <li><Link className="dropdown-item" to="#">Another action</Link></li>
-                        <li><hr className="dropdown-divider" /></li>
-                        <li><Link className="dropdown-item" to="#">Something else here</Link></li>
-                      </ul>
-                    </li>
-                  </>
-                ) : null}
-                
-                <li className="nav-item">
-                  <button className='btn btn-danger' onClick={() => logOutUser()}>Logout</button>
-                </li>
-              </>
-            ) : (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/signup">Sign Up</Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/login">LogIn</Link>
-                </li>
-              </>
-            )}
-          </ul>
-          <form className="d-flex" role="search">
-            <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-            <button className="btn btn-outline-success" type="submit">Search</button>
-          </form>
-        </div>
-      </div>
-    </nav>
+    <>
+      <header className="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
+				<Link className="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" to="#">Company name</Link>
+
+				{isAuthenticated && isSuperAdminRoleExists ? (
+					<>
+						<div className="nav-item text-nowrap">
+							<div className="dropdown">
+								<button className="btn text-white dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									Dropdown
+								</button>
+								<div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+									<Link className="dropdown-item" to="#">Action</Link>
+									<Link className="dropdown-item" to="#">Another action</Link>
+									<div className="dropdown-divider"></div>
+									<Link className="dropdown-item" to="#">Separated link</Link>
+									<li><Link className="dropdown-item" to="/add-role-to-user">Update User Role</Link></li>
+								</div>
+							</div>
+						</div>
+					</>
+				) : null}
+
+				<nav className="nav ms-auto">
+					{isAuthenticated ? (
+						<>
+							<Link className="nav-link text-white" to="/">Home</Link>
+							<Link className="nav-link text-white" to="/list">List</Link>
+							<button className='btn btn-danger' onClick={() => logOutUser()}>Logout</button>
+						</>
+					) : (
+						<>
+							<Link className="nav-link text-white" to="/signup">Sign Up</Link>
+							<Link className="nav-link text-white" to="/login">Login</Link>
+						</>
+					)}
+					
+				</nav>
+
+				<ul className="navbar-nav flex-row d-md-none">
+					<li className="nav-item text-nowrap">
+						<button className="nav-link px-3 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSearch" aria-controls="navbarSearch" aria-expanded="false" aria-label="Toggle search">
+							<svg className="bi"><use xlinkHref="#search"/></svg>
+						</button>
+					</li>
+					<li className="nav-item text-nowrap">
+						<button className="nav-link px-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+							<svg className="bi"><use xlinkHref="#list"/></svg>
+						</button>
+					</li>
+				</ul>
+
+				<div id="navbarSearch" className="navbar-search w-100 collapse">
+					<input className="form-control w-100 rounded-0 border-0" type="text" placeholder="Search" aria-label="Search" />
+				</div>
+			</header>
+    </>
   );
 };
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { allUsers, createUser } from "../services/userServices";
+import { allUsers, createUser, userByUniqueId } from "../services/userServices";
 import bcrypt from 'bcrypt';
 import { ExtendedRequest } from '../middleware/isAuthenticated';
 import { User } from '../models/userModel';
@@ -108,5 +108,19 @@ export const listUsers = async (req: ExtendedRequest, res: Response) => {
     } catch (error) {
         console.error('Error etrieving users:', error);
         res.status(500).json({ message: 'Internal server error.' });   
+    }
+}
+
+export const getUserByUniqueId = async (req: Request, res: Response) => {
+    try {
+        const { uniqueId } = req.body;
+        const user = await userByUniqueId(uniqueId);
+        if (user) {
+            return res.status(200).json({ message: "user retrieved successfully", data: user })
+        } else {
+            return res.status(404).json({ message: "user not found" })
+        }
+    } catch (error) {
+        return res.status(500).json({ message: "an error occured" })
     }
 }

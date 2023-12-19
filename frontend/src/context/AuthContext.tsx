@@ -2,11 +2,13 @@ import React, { ReactNode, createContext, useContext, useEffect, useState } from
 import { useAppSelector } from "../hooks/useTypedSelector";
 import { useJwt } from "react-jwt";
 import { baseUrl } from "../config/Config";
-import { isAdminRole } from "../utils/isAdminRole";
+import { isAdminRole, isOwnerRole, isSuperAdminRole } from "../utils/isAdminRole";
 
 interface AuthContextProps {
     isAuthenticated: boolean
     isAdminRoleExists: boolean | null
+    isSuperAdminRoleExists: boolean | null
+    isOwnerExists: boolean | null
     token: string
     userId: string
     loading: boolean
@@ -28,6 +30,8 @@ export const AuthProvider: React.FC<{ children: ReactNode}> = ({ children }) => 
     const [roleIds, setRoleIds] = useState<string[]>([]);
     const [tokenExpired, setTokenExpired] = useState(Boolean);
     const [isAdminRoleExists, setIsAdminRoleExists] = useState<boolean | null>(null);
+    const [isSuperAdminRoleExists, setIsSuperAdminRoleExists] = useState<boolean | null>(null);
+    const [isOwnerExists, setIsOwnerExists] = useState<boolean | null>(null);
 
     const { isAuthenticated, token, loading, message, status } = useAppSelector((state) => state.user);
     //const dispatch = useAppDispatch();
@@ -47,7 +51,11 @@ export const AuthProvider: React.FC<{ children: ReactNode}> = ({ children }) => 
             const rolesApiEndpoint = `${baseUrl}/api/roles/show-all-roles`;
             const fetchData = async () => {
                 const isAdmin = await isAdminRole({ roleIds }, rolesApiEndpoint, token);
+                const isSuperAdmin = await isSuperAdminRole({ roleIds }, rolesApiEndpoint, token);
+                const isOwner = await isOwnerRole({ roleIds }, rolesApiEndpoint, token);
                 setIsAdminRoleExists(isAdmin);
+                setIsSuperAdminRoleExists(isSuperAdmin);
+                setIsOwnerExists(isOwner);
             }
             fetchData();
         };
@@ -63,6 +71,8 @@ export const AuthProvider: React.FC<{ children: ReactNode}> = ({ children }) => 
                 status,
                 message,
                 isAdminRoleExists,
+                isSuperAdminRoleExists,
+                isOwnerExists,
                 userId,
             }}
         >

@@ -5,12 +5,12 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import List from './components/List';
 import { AuthProvider } from './context/AuthContext';
-import Page1 from './components/admin/Page1';
 import Page2 from './components/admin/Page2';
 import Page3 from './components/admin/Page3';
 import SignUp from './components/auth/SignUp';
 import Login from './components/auth/Login';
 import Home from './components/pages/Home';
+import UpdateUserRole from './components/auth/UpdateUserRole';
 
 const App: React.FC = () => {
 
@@ -20,8 +20,8 @@ const App: React.FC = () => {
         <Navbar />
         <Routes>
         <Route path="/" element={<Home />}>
-          <Route index element={<List />} />
-          <Route path="page1" element={<Page1 />} />
+          <Route index element={<div>Home content</div>} />
+          <Route path="add-role-to-user" element={<UpdateUserRole />} />
           <Route path="page2" element={<Page2 />} />
           <Route path="page3" element={<Page3 />} />
         </Route>

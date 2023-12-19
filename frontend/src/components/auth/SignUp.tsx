@@ -39,6 +39,11 @@ const SignUp: React.FC = () => {
       return;
     }
 
+    if (password !== confirmPassword) {
+      notifyError("Passwords do not match")
+      return;
+    }
+
     try {
       const result = await axios.post(`${baseUrl}/api/users/register-user`, {
         username, firstName, lastName, email, password

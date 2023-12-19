@@ -1,4 +1,4 @@
-import { generateUniqueId } from "../utilities/randomeId";
+import { generateOrgUniqueId } from "../utilities/randomeId";
 import { Organization } from "../models/organizationModel";
 import { User } from "../models/userModel"
 import { adminRoleToUser } from "./rolesServices";
@@ -19,7 +19,7 @@ export const createOrganization = async (userId: string, orgName: string) => {
     const savedOrg = new Organization({
         userId,
         organizationName: name,
-        organizationUniqueId: generateUniqueId()
+        organizationUniqueId: generateOrgUniqueId()
     });
     await savedOrg.save();
 
