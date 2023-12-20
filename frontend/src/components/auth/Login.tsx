@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../../hooks/useTypedSelector';
 import { loginUser } from '../../features/userSlice';
+import Spinner from '../../spinner/Spinner';
 
 
 const Login: React.FC = () => {
@@ -13,7 +14,7 @@ const Login: React.FC = () => {
     height: '100vh',
 	};
 	const navigate = useNavigate();
-	const { message, status, isAuthenticated } = useAppSelector((state) => state.user);
+	const { message, status, isAuthenticated, loading } = useAppSelector((state) => state.user);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useAppDispatch();
@@ -34,7 +35,11 @@ const Login: React.FC = () => {
         username, password
       };
       dispatch(loginUser(userCredentials));
-			notifySuccess(message);
+			if (status === "success") {
+				notifySuccess("User signed in successfully");
+			} else if (status === "rejected") {
+				notifyError(message)
+			}
 			navigate('/');
     } catch (error) {
 	  	notifyError(message);
@@ -51,6 +56,7 @@ const Login: React.FC = () => {
     <div style={backgroundImages}>
       <div className='container'>
 		<h3>Login page</h3>
+		<Spinner loading={loading} />
 		<form onSubmit={handleSubmit}>
 			<div className="form-floating mb-3">
 				<input
@@ -84,9 +90,8 @@ const Login: React.FC = () => {
 
 			<div className="col-12">
 				{status === "" && <button type='submit' className="btn btn-primary">Login</button>}
-				{status === "pending" && <button type='submit' className="btn btn-primary">{message}</button>}
+				{status === "pending" && <button type='submit' className="btn btn-primary" disabled>Please wait ...</button>}
 				{status === "rejected" && <button type='submit' className="btn btn-primary">Something Went Wrong</button>}
-				
 			</div>
 
 			<div>

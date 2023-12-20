@@ -121,7 +121,6 @@ export const listUsers = async (req: ExtendedRequest, res: Response) => {
 export const getUserByUniqueId = async (req: Request, res: Response) => {
     try {
         const { uniqueId } = req.query;
-        console.log(`uniqueId = ${req.body}`)
         const user = await userByUniqueId(uniqueId as string);
         if (user) {
             return res.status(200).json({ message: "user retrieved successfully", data: user })

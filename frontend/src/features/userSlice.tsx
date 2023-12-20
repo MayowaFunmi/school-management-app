@@ -25,7 +25,7 @@ export const loginUser = createAsyncThunk(
     try {
       const request = await axios.post<UserLogin>(`${baseUrl}/api/users/signin`, data)
       const response = request.data;
-      localStorage.setItem("user", JSON.stringify(response.data));
+      localStorage.setItem("user", response.data);
       return response;
     } catch (error: any) {
       return thunkApi.rejectWithValue(error.message);
@@ -62,6 +62,7 @@ export const getRefreshToken = createAsyncThunk(
     }
   }
 )
+
 const userSlice = createSlice({
     name: 'user',
     initialState,
@@ -88,7 +89,7 @@ const userSlice = createSlice({
         .addCase(loginUser.fulfilled, (state, action: PayloadAction<any>) => {
           if (action.payload) {
             const data = action.payload;
-            
+            console.log("action token = ", data.data)
             return {
               ...state,
               isAuthenticated: true,
@@ -102,7 +103,7 @@ const userSlice = createSlice({
         .addCase(loginUser.rejected, (state, action: PayloadAction<any>) => {
           const data = action.payload;
           return {
-            ...state, message: data.message, status: "rejected"
+            ...state, message: data.message, status: "rejected", loading: false
           }
         });
       builder
@@ -129,6 +130,11 @@ const userSlice = createSlice({
         // });
 
       builder
+        .addCase(logoutUser.pending, (state) => {
+          return {
+            ...state, loading: true
+          };
+        })
         .addCase(logoutUser.fulfilled, (state) => {
           state.isAuthenticated = false;
           state.loading = false;

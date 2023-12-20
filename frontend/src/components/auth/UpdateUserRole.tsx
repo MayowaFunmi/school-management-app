@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios, { AxiosRequestConfig } from 'axios';
-import { baseUrl } from '../../config/Config';
+import { useAppSelector, useAppDispatch } from "../../hooks/useTypedSelector";
+import { getUserDetails } from '../../features/adminSlice';
+import Spinner from '../../spinner/Spinner';
 
-const UpdateUserRole = () => {
+const UpdateUserRole: React.FC = () => {
   interface Users {
     _id: string
     username: string
@@ -16,22 +17,25 @@ const UpdateUserRole = () => {
     uniqueId: string
     createdAt: string
   }
-  const { isAuthenticated, isSuperAdminRoleExists, token } = useAuth();
+  const { isAuthenticated, isSuperAdminRoleExists } = useAuth();
   const [uniqueId, setUniqueid] = useState('');
+  //const [msg, setMsg] = useState('');
   const [userDetails, setUserDetails] = useState<Users | undefined>(undefined);
   const notifyError = (msg: string) => toast.error(msg);
-  const notifySuccess = (msg: string) => toast.success(msg);
+
+  const dispatch = useAppDispatch();
+  const { loading, data, status } = useAppSelector((state) => state.admin);
+
+  useEffect(() => {
+    if (!loading) {
+      //setMsg(message);
+      setUserDetails(data);
+    }
+  }, [data, loading])
 
   if (!isAuthenticated && !isSuperAdminRoleExists) {
     return <Navigate to="/" />;
   }
-
-  const options = {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  };
 
   const handleGetUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,25 +43,14 @@ const UpdateUserRole = () => {
     if (!uniqueId) {
       notifyError("Unique ID of user cannot be empty");
     }
-    const endpoint = `${baseUrl}/api/users/get-user-by-unique-id?uniqueId=${uniqueId}`;
-    try {
-      const axiosConfig: AxiosRequestConfig = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        
-      }
-      const response = await axios.get(endpoint, axiosConfig);
-      setUserDetails(response.data.data);
-      notifySuccess(response.data.message);
-    } catch (error) {
-      console.log(`error = ${error}`);
-    }
-  }
+    dispatch(getUserDetails(uniqueId));
+  };
+
   return (
     <>
       {/* get user by */}
       <div className="container">
+		    <Spinner loading={loading} />
         <form onSubmit={handleGetUser}>
           <div className="form-floating mb-3">
             <input
@@ -75,7 +68,10 @@ const UpdateUserRole = () => {
           </div>
 
           <div className="col-12">
-            <button type='submit' className="btn btn-primary">Get User Details</button>
+            {status === "" && <button type='submit' className="btn btn-primary">Get User Details</button>}
+            {status === "pending" && <button type='submit' className="btn btn-primary" disabled>Please wait ...</button>}
+            {(status === "success" || status === "rejected") && null}
+            
           </div>
         </form>
 
