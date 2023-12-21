@@ -1,5 +1,5 @@
 const uniqueId = function () {
-    const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const letters = 'ABCDEFGHJKLMNPQRTUVWXYZ';
     const numbers = '123456789';
     let result = '';
 

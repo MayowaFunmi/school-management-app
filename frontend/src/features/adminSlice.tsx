@@ -23,6 +23,8 @@ interface Data {
 	data: Users
 	roles: Roles
 	roleMsg: string
+	orgMsg: string
+	orgStatus: string
 }
 
 const initialState: Data = {
@@ -41,7 +43,9 @@ const initialState: Data = {
   roles: {
     roles: [],
   },
-  roleMsg: ""
+  roleMsg: "",
+  orgMsg: "",
+  orgStatus: ""
 };
 
 interface Values { userId: string, roleName: string }
@@ -101,10 +105,33 @@ export const removeRoleFromUser = createAsyncThunk(
 	}
 )
 
+export const createOrganization = createAsyncThunk(
+	'admin/createOrganization',
+	async (organizationName: string, thunkApi) => {
+		const token = localStorage.getItem("user");
+		try {
+			const axiosConfig: AxiosRequestConfig = {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				}
+			};
+			const response = await axios.post(`${baseUrl}/api/admin/create-organization`, {organizationName}, axiosConfig)
+			console.log("value response = ", response)
+			return response.data;
+		} catch (error: any) {
+			return thunkApi.rejectWithValue(error.message);
+		}
+	}
+)
+
 const adminSlice = createSlice({
 	name: 'admin',
 	initialState,
-	reducers: {},
+	reducers: {
+		clearUserData: (state) => {
+			return { ...initialState };
+		}
+	},
 	extraReducers: (builder) => {
 		builder
 			.addCase(getUserDetails.pending, (state) => {
@@ -169,7 +196,27 @@ const adminSlice = createSlice({
 					}
 				}
 			})
+		builder
+			.addCase(createOrganization.pending, (state) => {
+				return { ...state, orgStatus: "pending" }
+			})
+			.addCase(createOrganization.fulfilled, (state, action: PayloadAction<any>) => {
+				if (action.payload) {
+					const dataMsg = action.payload;
+					return {
+						...state, orgMsg: dataMsg.message, orgStatus: "success"
+					}
+				}
+			})
+			.addCase(createOrganization.rejected, (state, action: PayloadAction<any>) => {
+				if (action.payload) {
+					const dataMsg = action.payload;
+					return {
+						...state, orgMsg: dataMsg.message, orgStatus: "rejected"
+					}
+				}
+			})
 	}
 })
-
+export const { clearUserData } = adminSlice.actions;
 export default adminSlice.reducer;

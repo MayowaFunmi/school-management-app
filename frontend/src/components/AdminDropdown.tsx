@@ -1,20 +1,20 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-const Dropdown: React.FC = () => {
+const AdminDropdown: React.FC = () => {
   return (
     <>
 			<div className="nav-item text-nowrap">
 				<div className="dropdown">
 					<button className="btn text-white dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						Dropdown
+						Admin
 					</button>
 					<div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
 						<Link className="dropdown-item" to="#">Action</Link>
 						<Link className="dropdown-item" to="#">Another action</Link>
 						<div className="dropdown-divider"></div>
 						<Link className="dropdown-item" to="#">Separated link</Link>
-						<li><Link className="dropdown-item" to="/add-role-to-user">Update User Role</Link></li>
+						<li><Link className="dropdown-item" to="/create-organization">Organization</Link></li>
 					</div>
 				</div>
 			</div>
@@ -22,4 +22,4 @@ const Dropdown: React.FC = () => {
   )
 }
 
-export default Dropdown
+export default AdminDropdown

@@ -3,28 +3,32 @@ import { Organization } from "../models/organizationModel";
 import { User } from "../models/userModel"
 import { adminRoleToUser } from "./rolesServices";
 
-export const createOrganization = async (userId: string, orgName: string) => {
-    const adminUser = await User.findById(userId);
-    let name: string = "";
-    if (!adminUser) {
-        throw new Error("user not found")
-    }
+export const createOrganization = async (userId: string, organizationName: string) => {
+    try {
+        const adminUser = await User.findById(userId);
+        let name: string = "";
+        if (!adminUser) {
+            throw new Error("user not found")
+        }
 
-    if (!orgName)
-    {
-        throw new Error("Organization name cannot be empty");
-    } else {
-        name = orgName.toLowerCase();
+        if (!organizationName)
+        {
+            return "Organization name cannot be empty";
+        } else {
+            name = organizationName.toLowerCase();
+        }
+        const savedOrg = new Organization({
+            userId,
+            organizationName: name,
+            organizationUniqueId: generateOrgUniqueId()
+        });
+        await savedOrg.save();
+        return `Organization ${name} created successfully`
+    } catch (error) {
+        console.log("error: ", error)
+        return `Failed to create organization`
     }
-    const savedOrg = new Organization({
-        userId,
-        organizationName: name,
-        organizationUniqueId: generateOrgUniqueId()
-    });
-    await savedOrg.save();
-
-    // add Admin role to user
-    await adminRoleToUser(userId, "ADMIN");
+    
 }
 
 export const getOrganizationByAdminId = async (adminId: string) => {

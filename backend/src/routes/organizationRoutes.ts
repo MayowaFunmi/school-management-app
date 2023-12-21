@@ -5,8 +5,8 @@ import { checkAdminRole, checkOwnerRole, checkSuperAdminRole } from '../middlewa
 
 const router = express.Router();
 
-router.post('/create-organization', verifyLogin, checkSuperAdminRole, addOrganization);
+router.post('/create-organization', verifyLogin, checkAdminRole, addOrganization);
 router.get('/get-organization-by-admin-id', verifyLogin, checkAdminRole, organizationByAdminId);
-router.get('/get-organizations', verifyLogin, checkOwnerRole, listAllOrganizations);
+router.get('/get-organizations', verifyLogin, checkSuperAdminRole, listAllOrganizations);
 
 export default router;

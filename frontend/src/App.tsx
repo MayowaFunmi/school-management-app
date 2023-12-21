@@ -3,14 +3,12 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import List from './components/List';
 import { AuthProvider } from './context/AuthContext';
-import Page2 from './components/admin/Page2';
-import Page3 from './components/admin/Page3';
 import SignUp from './components/auth/SignUp';
 import Login from './components/auth/Login';
 import Home from './components/pages/Home';
 import UpdateUserRole from './components/auth/UpdateUserRole';
+import Organization from './components/admin/Organization';
 
 const App: React.FC = () => {
 
@@ -22,9 +20,7 @@ const App: React.FC = () => {
         <Route path="/" element={<Home />}>
           <Route index element={<div>Home content</div>} />
           <Route path="add-role-to-user" element={<UpdateUserRole />} />
-          <Route path='/list' element={<List />} />
-          <Route path="page2" element={<Page2 />} />
-          <Route path="page3" element={<Page3 />} />
+          <Route path='create-organization' element={<Organization />} />
         </Route>
           <Route path='/signup' element={<SignUp />} />
           <Route path='/login' element={<Login />} />

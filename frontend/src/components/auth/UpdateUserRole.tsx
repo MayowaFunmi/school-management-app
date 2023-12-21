@@ -56,6 +56,7 @@ const UpdateUserRole: React.FC = () => {
 
     if (!uniqueId) {
       notifyError("Unique ID of user cannot be empty");
+      return;
     }
     await dispatch(getUserDetails(uniqueId));
   };
@@ -80,7 +81,6 @@ const UpdateUserRole: React.FC = () => {
 
   return (
     <>
-      {/* get user by */}
       <div className="container">
 		    <Spinner loading={loading} />
         <form onSubmit={handleGetUser}>

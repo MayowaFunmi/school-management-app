@@ -1,15 +1,15 @@
-// Navbar.tsx
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useAppDispatch } from '../hooks/useTypedSelector';
 import { logoutUser } from '../features/userSlice';
-import Dropdown from './Dropdown';
+import SuperAdminDropdown from './SuperAdminDropdown';
+import AdminDropdown from './AdminDropdown';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isAuthenticated, isSuperAdminRoleExists } = useAuth();
+  const { isAuthenticated, isSuperAdminRoleExists, isAdminRoleExists } = useAuth();
 
   const logOutUser = async () => {
     try {
@@ -23,9 +23,10 @@ const Navbar: React.FC = () => {
   return (
     <>
       <header className="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
-				<Link className="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" to="#">Company name</Link>
+				<Link className="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" to="#">School Management App</Link>
 
-				{isAuthenticated && isSuperAdminRoleExists && <Dropdown />}
+				{isAuthenticated && isSuperAdminRoleExists && <SuperAdminDropdown />}
+				{isAuthenticated && isAdminRoleExists && <AdminDropdown />}
 
 				<nav className="nav ms-auto">
 					{isAuthenticated ? (

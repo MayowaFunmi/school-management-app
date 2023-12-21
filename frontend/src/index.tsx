@@ -5,7 +5,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import store from './store/store';
-import { clearUserData, initializeStateFromLocalStorage } from './features/userSlice';
+import { initializeStateFromLocalStorage } from './features/userSlice';
+import { clearUserData } from './features/adminSlice';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -15,9 +16,9 @@ const storedToken = localStorage.getItem("user");
 
 if (storedToken) {
   store.dispatch(initializeStateFromLocalStorage(storedToken));
-};
-
-//store.dispatch(clearUserData())
+} else {
+  store.dispatch(clearUserData())
+}
 
 root.render(
   <React.StrictMode>

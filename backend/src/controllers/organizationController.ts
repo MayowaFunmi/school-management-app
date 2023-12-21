@@ -6,11 +6,11 @@ export const addOrganization = async (req: ExtendedRequest, res: Response) => {
     try {
         const { userId } = req.user;
         const { organizationName } = req.body;
-        await createOrganization(userId, organizationName);
-        return res.status(200).json({ message: "Your organization created successfully, you are now an admin for your organization"});
+        const result = await createOrganization(userId, organizationName);
+        return res.status(200).json({ message: result});
     } catch (error) {
         console.log("error occured - ", error);
-        return res.status(500).json({ message: "internal server error "})
+        return res.status(500).json({ message: "Failed to create organization "})
     }
 }
 
