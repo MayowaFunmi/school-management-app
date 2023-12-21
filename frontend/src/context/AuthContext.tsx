@@ -2,8 +2,8 @@ import React, { ReactNode, createContext, useContext, useEffect, useState } from
 import { useAppSelector, useAppDispatch } from "../hooks/useTypedSelector";
 import { useJwt } from "react-jwt";
 import { baseUrl } from "../config/Config";
-import { isAdminRole, isOwnerRole, isSuperAdminRole } from "../utils/isAdminRole";
-import { getRefreshToken, logoutUser } from "../features/userSlice";
+import { logoutUser } from "../features/userSlice";
+import axios from "axios";
 
 interface AuthContextProps {
     isAuthenticated: boolean
@@ -15,6 +15,7 @@ interface AuthContextProps {
     loading: boolean
     message: string
     status: string
+    roles: Data[]
 }
 
 interface DecodedToken {
@@ -24,12 +25,25 @@ interface DecodedToken {
     exp: number;
 }
 
+interface Data {
+    _id: object,
+    roleName: string,
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+}
+interface Role {
+    message: string,
+    data: Data[]
+}
+
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode}> = ({ children }) => {
     const [userId, setUserId] = useState<string>("");
     const [roleIds, setRoleIds] = useState<string[]>([]);
-    const [tokenExpired, setTokenExpired] = useState(Boolean);
+    const [roles, setRoles] = useState<Data[]>([]);
+    //const [tokenExpired, setTokenExpired] = useState(Boolean);
     const [isAdminRoleExists, setIsAdminRoleExists] = useState<boolean | null>(null);
     const [isSuperAdminRoleExists, setIsSuperAdminRoleExists] = useState<boolean | null>(null);
     const [isOwnerExists, setIsOwnerExists] = useState<boolean | null>(null);
@@ -38,6 +52,7 @@ export const AuthProvider: React.FC<{ children: ReactNode}> = ({ children }) => 
     //const dispatch = useAppDispatch();
     const { decodedToken, isExpired } = useJwt(token);
     const dispatch = useAppDispatch();
+
     useEffect(() => {
         if(isExpired) {
             dispatch(logoutUser());
@@ -46,23 +61,51 @@ export const AuthProvider: React.FC<{ children: ReactNode}> = ({ children }) => 
 
     useEffect(() => {
         if (decodedToken) {
-            const { roles, userId } = decodedToken as DecodedToken;
-            setUserId(userId);
-            setRoleIds(roles);
-            setTokenExpired(isExpired)
-            const rolesApiEndpoint = `${baseUrl}/api/roles/show-all-roles`;
-            const fetchData = async () => {
-                const isAdmin = await isAdminRole({ roleIds }, rolesApiEndpoint, token);
-                const isSuperAdmin = await isSuperAdminRole({ roleIds }, rolesApiEndpoint, token);
-                const isOwner = await isOwnerRole({ roleIds }, rolesApiEndpoint, token);
-                setIsAdminRoleExists(isAdmin);
-                setIsSuperAdminRoleExists(isSuperAdmin);
-                setIsOwnerExists(isOwner);
+          const { roles, userId } = decodedToken as DecodedToken;
+          setUserId(userId);
+          setRoleIds(roles);
+          //setTokenExpired(isExpired);
+      
+          const rolesApiEndpoint = `${baseUrl}/api/roles/show-all-roles`;
+          const fetchData = async () => {
+            try {
+              const response = await axios.get<Role>(rolesApiEndpoint, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+              const allRoles = response.data.data;
+              setRoles(allRoles);
+              const isAdmin = allRoles.some(
+                (role) =>
+                  roleIds.includes(role._id.toString()) &&
+                  (role.roleName === "ADMIN" || role.roleName === "OWNER")
+              );
+      
+              const isSuperAdmin = allRoles.some(
+                (role) =>
+                  roleIds.includes(role._id.toString()) &&
+                  (role.roleName === "SUPER ADMIN" || role.roleName === "OWNER")
+              );
+      
+              const isOwner = allRoles.some(
+                (role) =>
+                  roleIds.includes(role._id.toString()) &&
+                  role.roleName === "OWNER"
+              );
+      
+              setIsAdminRoleExists(isAdmin);
+              setIsSuperAdminRoleExists(isSuperAdmin);
+              setIsOwnerExists(isOwner);
+            } catch (error) {
+              console.error('Error fetching roles:', error);
             }
-            fetchData();
-        };
-        
-    }, [decodedToken, roleIds, userId, isExpired, tokenExpired, token, isAdminRoleExists])
+          };
+      
+          fetchData();
+        }
+      }, [dispatch, decodedToken, roleIds, userId, isExpired, token]);
+      
     
     return (
         <AuthContext.Provider 
@@ -76,6 +119,7 @@ export const AuthProvider: React.FC<{ children: ReactNode}> = ({ children }) => 
                 isSuperAdminRoleExists,
                 isOwnerExists,
                 userId,
+                roles
             }}
         >
             {children}

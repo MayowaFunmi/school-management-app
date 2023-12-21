@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { createRole, getRoles } from '../models/userRoles';
-import { adminRoleToUser } from '../services/rolesServices';
+import { adminRoleToUser, removeRoleFromUser } from '../services/rolesServices';
 
 export const addNewRole = async (req: Request, res: Response) => {
     try {
@@ -31,10 +31,22 @@ export const addAdminRoleToUser = async (req: Request, res: Response) => {
     const { userId, roleName } = req.body;
 
     try {
-        await adminRoleToUser(userId, roleName.toUpperCase());
-        res.status(200).json({ message: `${roleName} role added successfully.` });
+        const resultMessage = await adminRoleToUser(userId, roleName);
+        res.status(200).json({ message: resultMessage });
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-}
+};
+
+export const removeAdminRoleFromUser = async (req: Request, res: Response) => {
+    const { userId, roleName } = req.body;
+
+    try {
+        const resultMessage = await removeRoleFromUser(userId, roleName);
+        res.status(200).json({ message: resultMessage });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};

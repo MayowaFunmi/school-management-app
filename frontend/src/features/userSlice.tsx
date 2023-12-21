@@ -55,7 +55,7 @@ export const getRefreshToken = createAsyncThunk(
       };
       const response = await axios.post(`${baseUrl}/api/users/refresh-token`, {}, axiosConfig);
       console.log("new token = ", response.data)
-      localStorage.setItem("user", JSON.stringify(response.data));
+      localStorage.setItem("user", response.data);
       return response.data;
     } catch (error: any) {
       return thunkApi.rejectWithValue(error.message);
@@ -89,7 +89,6 @@ const userSlice = createSlice({
         .addCase(loginUser.fulfilled, (state, action: PayloadAction<any>) => {
           if (action.payload) {
             const data = action.payload;
-            console.log("action token = ", data.data)
             return {
               ...state,
               isAuthenticated: true,

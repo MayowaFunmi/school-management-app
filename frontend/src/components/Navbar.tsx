@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useAppDispatch } from '../hooks/useTypedSelector';
 import { logoutUser } from '../features/userSlice';
+import Dropdown from './Dropdown';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -24,24 +25,7 @@ const Navbar: React.FC = () => {
       <header className="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
 				<Link className="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" to="#">Company name</Link>
 
-				{isAuthenticated && isSuperAdminRoleExists ? (
-					<>
-						<div className="nav-item text-nowrap">
-							<div className="dropdown">
-								<button className="btn text-white dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-									Dropdown
-								</button>
-								<div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-									<Link className="dropdown-item" to="#">Action</Link>
-									<Link className="dropdown-item" to="#">Another action</Link>
-									<div className="dropdown-divider"></div>
-									<Link className="dropdown-item" to="#">Separated link</Link>
-									<li><Link className="dropdown-item" to="/add-role-to-user">Update User Role</Link></li>
-								</div>
-							</div>
-						</div>
-					</>
-				) : null}
+				{isAuthenticated && isSuperAdminRoleExists && <Dropdown />}
 
 				<nav className="nav ms-auto">
 					{isAuthenticated ? (
