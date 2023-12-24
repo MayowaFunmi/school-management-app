@@ -33,14 +33,14 @@ const Login: React.FC = () => {
     try {
       const userCredentials = {
         username, password
-      };
-      dispatch(loginUser(userCredentials));
-			if (status === "success") {
-				notifySuccess("User signed in successfully");
-			} else if (status === "rejected") {
-				notifyError(message)
-			}
-			navigate('/');
+    };
+    dispatch(loginUser(userCredentials));
+	if (status === "success") {
+		notifySuccess("User signed in successfully");
+	} else if (status === "rejected") {
+		notifyError(message)
+	}
+	navigate('/');
     } catch (error) {
 	  	notifyError(message);
     }

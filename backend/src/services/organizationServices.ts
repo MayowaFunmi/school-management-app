@@ -38,9 +38,24 @@ export const getOrganizationByAdminId = async (adminId: string) => {
     }
 }
 
+export const retrieveAdminOrganizations = async (adminId: string) => {
+    try {
+        const adminOrgs = await Organization.find({ userId: adminId }).populate("userId");
+        if (!adminOrgs) {
+            return null
+        }
+        return adminOrgs;
+    } catch (error) {
+        throw error
+    }
+}
+
 export const allOrganizations = async () => {
-    const orgs = await Organization.find();
-    return orgs;
+    try {
+        return await Organization.find().populate("userId");
+    } catch (error) {
+        throw error
+    }
 }
 
 export const organizationExists = async (orgUniqueId: string, adminId: string) => {

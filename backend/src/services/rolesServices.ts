@@ -3,13 +3,16 @@ import { RoleModel } from "../models/userRoles"
 
 export const adminRoleToUser = async (userId: string, roleName: string) => {
     try {
+        if (!userId || !roleName) {
+            return "UserId or Role Name is empty"
+        }
         const adminRole = await RoleModel.findOne({ roleName: roleName });
         if (!adminRole) {
-            throw new Error('Role not found');
+            return 'Role not found';
         }
         const user = await User.findById(userId);
         if (!user) {
-            throw new Error('User not found');
+            return 'User not found';
         }
 
         if (!user.roles) {

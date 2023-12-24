@@ -3,11 +3,11 @@ import { useAppDispatch, useAppSelector } from '../../hooks/useTypedSelector'
 import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { createOrganization } from '../../features/adminSlice';
+import { createOrganization, getAdminOrganizations } from '../../features/adminSlice';
 
 const Organization = () => {
 
-  const { orgMsg, orgStatus } = useAppSelector((state) => state.admin);
+  const { orgMsg, orgStatus, organizations, checkOrgs } = useAppSelector((state) => state.admin);
   const { isAuthenticated, isAdminRoleExists } = useAuth();
   const dispatch = useAppDispatch();
 
@@ -22,7 +22,8 @@ const Organization = () => {
     } else if (orgStatus === "rejected") {
       notifyError(orgMsg)
     }
-  }, [orgMsg, orgStatus])
+    dispatch(getAdminOrganizations());
+  }, [dispatch, orgMsg, orgStatus])
 
   if (!isAuthenticated && !isAdminRoleExists) {
     return <Navigate to='/' />
@@ -61,7 +62,21 @@ const Organization = () => {
             {orgStatus === "success" && null}
           </div>
         </form>
-        </div>
+      </div>
+      <hr />
+      <h3>Your Organizations</h3>
+      {checkOrgs === "success" && 
+        <>
+          {organizations.map((org) => (
+            <div key={org._id.toString()}>
+              {/* <p>User Id: {org.userId}</p> */}
+              <p>Organization Name: {org.organizationName}</p>
+              <p>Organization Unique Id: {org.organizationUniqueId}</p>
+              <hr />
+            </div>
+          ))}
+        </>
+      }
     </>
   )
 }

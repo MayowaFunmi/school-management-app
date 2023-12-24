@@ -2,6 +2,15 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { baseUrl } from "../config/Config";
 import axios, { AxiosRequestConfig } from "axios";
 
+interface Organization {
+	_id: string;
+	userId: Users;
+	organizationName: string;
+	organizationUniqueId: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
 interface Users {
 	_id: string
 	username: string
@@ -25,6 +34,10 @@ interface Data {
 	roleMsg: string
 	orgMsg: string
 	orgStatus: string
+	organizations: Organization[]
+	checkOrgs: string
+	allOrganizations: Organization[]
+	allOrgsMsg: string
 }
 
 const initialState: Data = {
@@ -45,7 +58,11 @@ const initialState: Data = {
   },
   roleMsg: "",
   orgMsg: "",
-  orgStatus: ""
+  orgStatus: "",
+  organizations: [],
+  checkOrgs: "",
+  allOrganizations: [],
+  allOrgsMsg: ""
 };
 
 interface Values { userId: string, roleName: string }
@@ -116,8 +133,43 @@ export const createOrganization = createAsyncThunk(
 				}
 			};
 			const response = await axios.post(`${baseUrl}/api/admin/create-organization`, {organizationName}, axiosConfig)
-			console.log("value response = ", response)
 			return response.data;
+		} catch (error: any) {
+			return thunkApi.rejectWithValue(error.message);
+		}
+	}
+)
+
+export const getAdminOrganizations = createAsyncThunk(
+	'admin/getAdminOrganizations',
+	async(_, thunkApi) => {
+		const token = localStorage.getItem("user");
+		try {
+			const axiosConfig: AxiosRequestConfig = {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				}
+			};
+			const response = await axios.get(`${baseUrl}/api/admin/get-admin-organizations`, axiosConfig);
+			return response.data
+		} catch (error: any) {
+			return thunkApi.rejectWithValue(error.message);
+		}
+	}
+)
+
+export const getAllOrganizations = createAsyncThunk(
+	'admin/getAllOrganizations',
+	async(_, thunkApi) => {
+		const token = localStorage.getItem("user");
+		try {
+			const axiosConfig: AxiosRequestConfig = {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				}
+			};
+			const response = await axios.get(`${baseUrl}/api/admin/get-organizations`, axiosConfig);
+			return response.data
 		} catch (error: any) {
 			return thunkApi.rejectWithValue(error.message);
 		}
@@ -213,6 +265,47 @@ const adminSlice = createSlice({
 					const dataMsg = action.payload;
 					return {
 						...state, orgMsg: dataMsg.message, orgStatus: "rejected"
+					}
+				}
+			})
+		builder
+			.addCase(getAdminOrganizations.pending, (state) => {
+				return { ...state, checkOrgs: "pending" }
+			})
+			.addCase(getAdminOrganizations.fulfilled, (state, action: PayloadAction<any>) => {
+				if (action.payload) {
+					const orgData = action.payload;
+					return {
+						...state, organizations: orgData.data, checkOrgs: "success"
+					}
+				}
+			})
+			.addCase(getAdminOrganizations.rejected, (state, action: PayloadAction<any>) => {
+				if (action.payload) {
+					const orgData = action.payload;
+					return {
+						...state, organizations: orgData.data, checkOrgs: "rejected"
+					}
+				}
+			})
+
+		builder
+			.addCase(getAllOrganizations.pending, (state) => {
+				return { ...state, allOrgsMsg: "pending" }
+			})
+			.addCase(getAllOrganizations.fulfilled, (state, action: PayloadAction<any>) => {
+				if (action.payload) {
+					const orgData = action.payload;
+					return {
+						...state, allOrganizations: orgData.data, allOrgsMsg: "success"
+					}
+				}
+			})
+			.addCase(getAllOrganizations.rejected, (state, action: PayloadAction<any>) => {
+				if (action.payload) {
+					const orgData = action.payload;
+					return {
+						...state, allOrganizations: orgData.data, allOrgsMsg: "rejected"
 					}
 				}
 			})

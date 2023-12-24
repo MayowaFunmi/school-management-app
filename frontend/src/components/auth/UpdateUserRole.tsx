@@ -181,7 +181,7 @@ const UpdateUserRole: React.FC = () => {
                     <input
                       type="text"
                       className="form-control"
-                      id="floatingUniqueId" 
+                      id="floatingUniqueId1" 
                       placeholder="Enter user's unique id"
                       name='userId'
                       value={userId}
@@ -189,16 +189,16 @@ const UpdateUserRole: React.FC = () => {
                         setUserId(e.target.value);
                       }}
                     />
-                    <label htmlFor="floatingUniqueId">Unique ID</label>
+                    <label htmlFor="floatingUniqueId1">Unique ID</label>
                   </div>
 
                   <div className="mb-3">
-                    <label htmlFor="userRoles" className="form-label">
+                    <label htmlFor="userRoles1" className="form-label">
                       Select User Role
                     </label>
                     <select
                       className="form-select"
-                      id="userRoles"
+                      id="userRoles1"
                       name="roleName"
                       value={roleName}
                       onChange={(e) => setRoleName(e.target.value)}
