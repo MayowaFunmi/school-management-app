@@ -10,11 +10,9 @@ const AdminDropdown: React.FC = () => {
 						Admin
 					</button>
 					<div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-						<Link className="dropdown-item" to="#">Action</Link>
-						<Link className="dropdown-item" to="#">Another action</Link>
+						<Link className="dropdown-item" to="/create-organization">Organization</Link>
 						<div className="dropdown-divider"></div>
 						<Link className="dropdown-item" to="#">Separated link</Link>
-						<li><Link className="dropdown-item" to="/create-organization">Organization</Link></li>
 					</div>
 				</div>
 			</div>

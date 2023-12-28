@@ -40,13 +40,6 @@ const UpdateUserRole: React.FC = () => {
     }
   }, [data, loading, roleMsg])
 
-  // useEffect(() => {
-  //   if (status === "success") {
-  //     dispatch(getAllRoles());
-  //     setUserRoles(roles);
-  //   }
-  // }, [dispatch, roles, status])
-
   if (!isAuthenticated && !isSuperAdminRoleExists) {
     return <Navigate to="/" />;
   }

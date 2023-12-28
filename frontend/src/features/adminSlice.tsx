@@ -1,83 +1,66 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { baseUrl } from "../config/Config";
-import axios, { AxiosRequestConfig } from "axios";
-
-interface Organization {
-	_id: string;
-	userId: Users;
-	organizationName: string;
-	organizationUniqueId: string;
-	createdAt: string;
-	updatedAt: string;
-}
-
-interface Users {
-	_id: string
-	username: string
-	firstName: string
-	lastName: string
-	email: string
-	roles: { roleName: string }[]
-	uniqueId: string
-	createdAt: string
-}
-
-interface Roles {
-	roles: { _id: string, roleName: string}[]
-}
-
-interface Data {
-    loading: boolean
-    status: string
-	data: Users
-	roles: Roles
-	roleMsg: string
-	orgMsg: string
-	orgStatus: string
-	organizations: Organization[]
-	checkOrgs: string
-	allOrganizations: Organization[]
-	allOrgsMsg: string
-}
+import { axiosConfig, baseUrl } from "../config/Config";
+import axios from "axios";
+import { Data, Values, ZoneValues } from "../models/userModel";
 
 const initialState: Data = {
-  loading: false,
-  status: "",
-  data: {
-    _id: "",
-    username: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    roles: [],
-    uniqueId: "",
-    createdAt: "",
-  },
-  roles: {
-    roles: [],
-  },
-  roleMsg: "",
-  orgMsg: "",
-  orgStatus: "",
-  organizations: [],
-  checkOrgs: "",
-  allOrganizations: [],
-  allOrgsMsg: ""
-};
-
-interface Values { userId: string, roleName: string }
+	loading: false,
+	status: "",
+	data: {
+	  _id: "",
+	  username: "",
+	  firstName: "",
+	  lastName: "",
+	  email: "",
+	  roles: [],
+	  uniqueId: "",
+	  createdAt: "",
+	},
+	roles: {
+	  roles: [],
+	},
+	roleMsg: "",
+	orgMsg: "",
+	orgStatus: "",
+	organizations: [],
+	checkOrgs: "",
+	organizationMsg: "",
+	allOrganizations: [],
+	allOrgsMsg: "",
+	zone: [],
+	// zone: {
+	// 	_id: "",
+	// 	organizationId: {
+	// 		_id: "",
+	// 		userId: {
+	// 			_id: "",
+	// 			username: "",
+	// 			firstName: "",
+	// 			lastName: "",
+	// 			email: "",
+	// 			roles: [],
+	// 			uniqueId: "",
+	// 			createdAt: "",
+	// 		  },
+	// 		organizationName: "",
+	// 		organizationUniqueId: "",
+	// 		createdAt: "",
+	// 		updatedAt: ""
+	// 	},
+	// 	name: "",
+	// 	createdAt: "",
+	// 	updatedAt: ""
+	// },
+	zoneMsg: "",
+	allZones: [],
+	allZoneMsg: ""
+  };
 
 export const getUserDetails = createAsyncThunk(
     'admin/getUserDetails',
     async (data: string, thunkApi) => {
       try {
-        const token = localStorage.getItem("user");
         const endpoint = `${baseUrl}/api/users/get-user-by-unique-id?uniqueId=${data}`;
-        const axiosConfig: AxiosRequestConfig = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
         const response = await axios.get(endpoint, axiosConfig);
         return response.data;
       } catch (error: any) {
@@ -89,13 +72,7 @@ export const getUserDetails = createAsyncThunk(
 export const addRoleToUser = createAsyncThunk(
 	'admin/addRoleToUser',
 	async (values: Values, thunkApi) => {
-		const token = localStorage.getItem("user");
 		try {
-			const axiosConfig: AxiosRequestConfig = {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				}
-			};
 			const response = await axios.post(`${baseUrl}/api/roles/add-role-to-user`, values, axiosConfig)
 			return response.data;
 		} catch (error: any) {
@@ -107,13 +84,7 @@ export const addRoleToUser = createAsyncThunk(
 export const removeRoleFromUser = createAsyncThunk(
 	'admin/removeRoleFromUser',
 	async (values: Values, thunkApi) => {
-		const token = localStorage.getItem("user");
 		try {
-			const axiosConfig: AxiosRequestConfig = {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				}
-			};
 			const response = await axios.post(`${baseUrl}/api/roles/remove-role-from-user`, values, axiosConfig)
 			return response.data;
 		} catch (error: any) {
@@ -125,13 +96,7 @@ export const removeRoleFromUser = createAsyncThunk(
 export const createOrganization = createAsyncThunk(
 	'admin/createOrganization',
 	async (organizationName: string, thunkApi) => {
-		const token = localStorage.getItem("user");
 		try {
-			const axiosConfig: AxiosRequestConfig = {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				}
-			};
 			const response = await axios.post(`${baseUrl}/api/admin/create-organization`, {organizationName}, axiosConfig)
 			return response.data;
 		} catch (error: any) {
@@ -140,16 +105,35 @@ export const createOrganization = createAsyncThunk(
 	}
 )
 
+export const createZone = createAsyncThunk(
+	'admin/createZone',
+	async (values: ZoneValues, thunkApi) => {
+		try {
+			const response = await axios.post(`${baseUrl}/api/zones/add-zone`, values, axiosConfig)
+			return response.data;
+		} catch (error: any) {
+			return thunkApi.rejectWithValue(error.message);
+		}
+	}
+)
+
+export const getOrganizationZones = createAsyncThunk(
+    'admin/getOrganizationZones',
+    async (organizationId: string, thunkApi) => {
+      try {
+        const endpoint = `${baseUrl}/api/zones/all-organization-zone-lists?organizationUniqueId=${organizationId}`;
+        const response = await axios.get(endpoint, axiosConfig);
+        return response.data;
+      } catch (error: any) {
+        return thunkApi.rejectWithValue(error.message);
+      }
+    }
+);
+
 export const getAdminOrganizations = createAsyncThunk(
 	'admin/getAdminOrganizations',
 	async(_, thunkApi) => {
-		const token = localStorage.getItem("user");
 		try {
-			const axiosConfig: AxiosRequestConfig = {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				}
-			};
 			const response = await axios.get(`${baseUrl}/api/admin/get-admin-organizations`, axiosConfig);
 			return response.data
 		} catch (error: any) {
@@ -161,13 +145,7 @@ export const getAdminOrganizations = createAsyncThunk(
 export const getAllOrganizations = createAsyncThunk(
 	'admin/getAllOrganizations',
 	async(_, thunkApi) => {
-		const token = localStorage.getItem("user");
 		try {
-			const axiosConfig: AxiosRequestConfig = {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				}
-			};
 			const response = await axios.get(`${baseUrl}/api/admin/get-organizations`, axiosConfig);
 			return response.data
 		} catch (error: any) {
@@ -181,7 +159,7 @@ const adminSlice = createSlice({
 	initialState,
 	reducers: {
 		clearUserData: (state) => {
-			return { ...initialState };
+			return { ...initialState, };
 		}
 	},
 	extraReducers: (builder) => {
@@ -284,7 +262,7 @@ const adminSlice = createSlice({
 				if (action.payload) {
 					const orgData = action.payload;
 					return {
-						...state, organizations: orgData.data, checkOrgs: "rejected"
+						...state, organizations: orgData.data, checkOrgs: "rejected", organizationMsg: orgData.message
 					}
 				}
 			})
@@ -306,6 +284,48 @@ const adminSlice = createSlice({
 					const orgData = action.payload;
 					return {
 						...state, allOrganizations: orgData.data, allOrgsMsg: "rejected"
+					}
+				}
+			})
+
+		builder
+			.addCase(createZone.pending, (state) => {
+				return { ...state, zoneMsg: "pending" }
+			})
+			.addCase(createZone.fulfilled, (state, action: PayloadAction<any>) => {
+				if (action.payload) {
+					const zoneData = action.payload;
+					return {
+						...state, zone: zoneData.data, zoneMsg: "success"
+					}
+				}
+			})
+			.addCase(createZone.rejected, (state, action: PayloadAction<any>) => {
+				if (action.payload) {
+					const zoneData = action.payload;
+					return {
+						...state, zone: zoneData.data, zoneMsg: "rejected"
+					}
+				}
+			})
+
+		builder
+			.addCase(getOrganizationZones.pending, (state) => {
+				return { ...state, allZoneMsg: "pending" }
+			})
+			.addCase(getOrganizationZones.fulfilled, (state, action: PayloadAction<any>) => {
+				if (action.payload) {
+					const zoneData = action.payload;
+					return {
+						...state, allZones: zoneData.data, allZoneMsg: "success"
+					}
+				}
+			})
+			.addCase(getOrganizationZones.rejected, (state, action: PayloadAction<any>) => {
+				if (action.payload) {
+					const zoneData = action.payload;
+					return {
+						...state, allZones: zoneData.data, allZoneMsg: "rejected"
 					}
 				}
 			})

@@ -52,19 +52,20 @@ export const retrieveAdminOrganizations = async (adminId: string) => {
 
 export const allOrganizations = async () => {
     try {
-        return await Organization.find().populate("userId");
+        const orgs = await Organization.find().populate("userId");
+        return orgs;
     } catch (error) {
         throw error
     }
 }
 
-export const organizationExists = async (orgUniqueId: string, adminId: string) => {
-    if (!orgUniqueId) {
+export const organizationExists = async (organizationUniqueId: string, adminId: string) => {
+    if (!organizationUniqueId) {
         throw new Error("Organization's unique id cannot be empty");
     }
-    const org = await Organization.findOne({ organizationUniqueId: orgUniqueId });
+    const org = await Organization.findOne({ organizationUniqueId: organizationUniqueId });
     if (org && org.userId.toString() == adminId) {
-        return orgUniqueId;
+        return org._id.toString();
     } else {
         return "";
     }

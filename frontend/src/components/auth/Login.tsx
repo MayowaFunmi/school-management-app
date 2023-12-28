@@ -22,6 +22,17 @@ const Login: React.FC = () => {
   const notifyError = (msg: string) => toast.error(msg);
   const notifySuccess = (msg: string) => toast.success(msg);
 
+  useEffect(() => {
+		if (isAuthenticated) {
+			navigate('/');
+		}
+		if (status === "success") {
+			notifySuccess("User signed in successfully");
+		} else if (status === "rejected") {
+			notifyError("Invalid username or password")
+		}
+	}, [isAuthenticated, navigate, message, status])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // check if all fields are filled
@@ -32,25 +43,14 @@ const Login: React.FC = () => {
 
     try {
       const userCredentials = {
-        username, password
-    };
-    dispatch(loginUser(userCredentials));
-	if (status === "success") {
-		notifySuccess("User signed in successfully");
-	} else if (status === "rejected") {
-		notifyError(message)
-	}
-	navigate('/');
+      	username, password
+			};
+			dispatch(loginUser(userCredentials));
+			navigate('/');
     } catch (error) {
 	  	notifyError(message);
     }
   }
-
-	useEffect(() => {
-		if (isAuthenticated) {
-			navigate('/');
-		}	
-	}, [isAuthenticated, navigate])
 
   return (
     <div style={backgroundImages}>
@@ -89,9 +89,7 @@ const Login: React.FC = () => {
 			</div>
 
 			<div className="col-12">
-				{status === "" && <button type='submit' className="btn btn-primary">Login</button>}
-				{status === "pending" && <button type='submit' className="btn btn-primary" disabled>Please wait ...</button>}
-				{status === "rejected" && <button type='submit' className="btn btn-primary">Something Went Wrong</button>}
+				<button type='submit' className="btn btn-primary">Login</button>
 			</div>
 
 			<div>

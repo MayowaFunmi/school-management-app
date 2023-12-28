@@ -37,11 +37,11 @@ export const loginUser = async (req: Request, res: Response) => {
         const user = await User.findOne({ username });
 
         if (!user) {
-            return res.status(401).json({ message: 'Invalid username or password.' });
+            return res.status(400).json({ message: 'Invalid username or password.' });
         };
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
-            return res.status(401).json({ message: 'Invalid username or password.' });
+            return res.status(400).json({ message: 'Invalid username or password.' });
         }
 
         // create access token

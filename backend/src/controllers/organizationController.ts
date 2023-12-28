@@ -45,7 +45,7 @@ export const listAllOrganizations = async (req: ExtendedRequest, res: Response) 
     try {
         const allOrgs = await allOrganizations();
         if (allOrgs.length === 0) {
-            return res.status(404).json({ message: "No organization found"})
+            return res.status(400).json({ message: "No organization found"})
         }
         return res.status(200).json({ message: "all organizations retrieved successfully", data: allOrgs })
     } catch (error) {

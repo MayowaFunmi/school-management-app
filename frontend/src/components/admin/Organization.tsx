@@ -3,15 +3,20 @@ import { useAppDispatch, useAppSelector } from '../../hooks/useTypedSelector'
 import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { createOrganization, getAdminOrganizations } from '../../features/adminSlice';
+import { createOrganization, getAdminOrganizations, getOrganizationZones } from '../../features/adminSlice';
+import Zones from './Zones';
+import { Organization as UserOrganization } from '../../models/userModel';
 
 const Organization = () => {
 
-  const { orgMsg, orgStatus, organizations, checkOrgs } = useAppSelector((state) => state.admin);
+  const { orgMsg, orgStatus, organizations, checkOrgs, allZones } = useAppSelector((state) => state.admin);
   const { isAuthenticated, isAdminRoleExists } = useAuth();
   const dispatch = useAppDispatch();
 
   const [organizationName, setOrganizationName] = useState("")
+  const [orgUniqueId, setOrgUniqueId] = useState("")
+  const [organizationDetails, setOrganizationDetails] = useState<UserOrganization | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const notifyError = (msg: string) => toast.error(msg);
   const notifySuccess = (msg: string) => toast.success(msg);
@@ -37,6 +42,32 @@ const Organization = () => {
     }
     await dispatch(createOrganization(organizationName))
   }
+
+  const getZones = async (id: string) => {
+    try {
+      await dispatch(getOrganizationZones(id));
+    } catch (error) {
+      console.error('Error fetching organization zones:', error);
+    }
+  };
+
+  const addZone = (id: string) => {
+    setOrgUniqueId(id);
+  }
+
+  const formatDate = (time: string) => {
+    return new Intl.DateTimeFormat('en-US').format(new Date(time));
+  };
+
+  const handleViewDetails  = (org: UserOrganization) => {
+    setOrganizationDetails(org);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setOrganizationDetails(null);
+    setIsModalOpen(false);
+  };
 
   return (
     <>
@@ -65,16 +96,111 @@ const Organization = () => {
       </div>
       <hr />
       <h3>Your Organizations</h3>
+      {/* {checkOrgs === "rejected" && <h3>No organization found for this user</h3>} */}
+
+      {organizations?.map((org) => (
+        <>
+          <div key={org._id.toString()}>
+            <p>Organization Name: {org.organizationName}</p>
+            <p>Organization Unique Id: {org.organizationUniqueId}</p>
+            <button className='btn btn-info' onClick={() => handleViewDetails(org)}>
+              View Details
+            </button>
+            <hr />
+          </div>
+        </>
+      ))}
+
+      {/* Bootstrap Modal */}
+      {organizationDetails && (
+        <div className={`modal ${isModalOpen ? 'show' : ''}`} tabIndex={-1} role="dialog" style={{ display: isModalOpen ? 'block' : 'none' }}>
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Organization Details For {organizationDetails.organizationName}</h5>
+                <button type="button" className="close" onClick={closeModal} aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                {/* Display organization details in the modal */}
+                <p>Organization Name: {organizationDetails.organizationName}</p>
+                <p>Organization Unique Id: {organizationDetails.organizationUniqueId}</p>
+                <button className='btn btn-info' onClick={() => getZones(organizationDetails.organizationUniqueId)}>List Zones</button> | 
+                <button className='btn btn-info' onClick={() => addZone(organizationDetails.organizationUniqueId)}>Add Zone</button>
+                {allZones?.length === 0 ? (
+                  <>
+                    {<p>{organizationDetails.organizationName} has no registered zone.</p>}
+                  </>
+                ) : (
+                  <>
+                    {allZones?.map((zone) => (
+                      <>
+                        <div key={zone._id.toString()}>
+                          <p>Zone Name: {zone.name}</p>
+                          <p>Organization Unique Id: {zone.organizationId.organizationUniqueId}</p>
+                          <p>Organization Name: {zone.organizationId.organizationName}</p>
+                          <p>Time Added: {formatDate(zone.createdAt.toString())}</p>
+                        </div>
+                      </>
+                    ))}
+                  </>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={closeModal}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       {checkOrgs === "success" && 
         <>
-          {organizations.map((org) => (
-            <div key={org._id.toString()}>
-              {/* <p>User Id: {org.userId}</p> */}
-              <p>Organization Name: {org.organizationName}</p>
-              <p>Organization Unique Id: {org.organizationUniqueId}</p>
-              <hr />
-            </div>
-          ))}
+          
+
+          {/* <button className='btn btn-info' onClick={() => addZone(org.organizationUniqueId)}>Add Zone</button> */}
+          {/* <div>
+            {allZones?.length === 0 ? (
+              <>
+                {<p>{orgUniqueId} has no registered zone.</p>}
+              </>
+            ) : (
+              <>
+                <button className='btn btn-info' onClick={() => getZones(orgUniqueId)}>List Zones For {orgUniqueId} Organization</button>
+                {allZones?.map((zone) => (
+                  <>
+                    <div key={zone._id.toString()}>
+                      <p>Zone Name: {zone.name}</p>
+                      <p>Organization Unique Id: {zone.organizationId.organizationUniqueId}</p>
+                      <p>Organization Name: {zone.organizationId.organizationName}</p>
+                      <p>Time Added: {formatDate(zone.createdAt.toString())}</p>
+                    </div>
+                  </>
+                ))}
+              </>
+            )}
+          </div>
+
+          {orgUniqueId && (
+            <Zones organizationUniqueId={orgUniqueId} />
+          )} */}
         </>
       }
     </>

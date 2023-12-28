@@ -1,7 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios, { AxiosRequestConfig } from "axios";
-import { baseUrl } from '../config/Config';
-import UserLogin from "../models/userModel";
+import axios from "axios";
+import { axiosConfig, baseUrl } from '../config/Config';
+import { UserLogin } from "../models/userModel";
 
 interface UserState {
   isAuthenticated: boolean;
@@ -48,11 +48,6 @@ export const getRefreshToken = createAsyncThunk(
   'user/getRefreshToken',
   async (data: string, thunkApi) => {
     try {
-      const axiosConfig: AxiosRequestConfig = {
-        headers: {
-            Authorization: `Bearer ${data}`,
-        }
-      };
       const response = await axios.post(`${baseUrl}/api/users/refresh-token`, {}, axiosConfig);
       console.log("new token = ", response.data)
       localStorage.setItem("user", response.data);

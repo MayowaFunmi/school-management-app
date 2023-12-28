@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
 const zoneSchema = new mongoose.Schema({
-    organizationUniqueId: {
-        type: String,
-        required: true
+    organizationId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization'
     },
     name: {
         type: String, required: true
