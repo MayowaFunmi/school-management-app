@@ -160,7 +160,13 @@ const adminSlice = createSlice({
 	reducers: {
 		clearUserData: (state) => {
 			return { ...initialState, };
-		}
+		},
+		resetAllZones: (state) => {
+			state.allZones = [];
+			state.allZoneMsg = "";
+			state.zone = [];
+			state.zoneMsg = ""
+		  },
 	},
 	extraReducers: (builder) => {
 		builder
@@ -331,5 +337,5 @@ const adminSlice = createSlice({
 			})
 	}
 })
-export const { clearUserData } = adminSlice.actions;
+export const { clearUserData, resetAllZones } = adminSlice.actions;
 export default adminSlice.reducer;

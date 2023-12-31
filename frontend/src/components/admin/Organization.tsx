@@ -3,13 +3,14 @@ import { useAppDispatch, useAppSelector } from '../../hooks/useTypedSelector'
 import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { createOrganization, getAdminOrganizations, getOrganizationZones } from '../../features/adminSlice';
+import { createOrganization, getAdminOrganizations, getOrganizationZones, resetAllZones } from '../../features/adminSlice';
 import Zones from './Zones';
 import { Organization as UserOrganization } from '../../models/userModel';
+import store from '../../store/store';
 
 const Organization = () => {
 
-  const { orgMsg, orgStatus, organizations, checkOrgs, allZones } = useAppSelector((state) => state.admin);
+  const { orgMsg, orgStatus, organizations, checkOrgs, allZones, zoneMsg } = useAppSelector((state) => state.admin);
   const { isAuthenticated, isAdminRoleExists } = useAuth();
   const dispatch = useAppDispatch();
 
@@ -60,6 +61,8 @@ const Organization = () => {
   };
 
   const handleViewDetails  = (org: UserOrganization) => {
+    // reset the state
+    store.dispatch(resetAllZones())
     setOrganizationDetails(org);
     setIsModalOpen(true);
   };
@@ -67,6 +70,7 @@ const Organization = () => {
   const closeModal = () => {
     setOrganizationDetails(null);
     setIsModalOpen(false);
+    setOrgUniqueId("");
   };
 
   return (
@@ -128,12 +132,10 @@ const Organization = () => {
                 <p>Organization Unique Id: {organizationDetails.organizationUniqueId}</p>
                 <button className='btn btn-info' onClick={() => getZones(organizationDetails.organizationUniqueId)}>List Zones</button> | 
                 <button className='btn btn-info' onClick={() => addZone(organizationDetails.organizationUniqueId)}>Add Zone</button>
-                {allZones?.length === 0 ? (
+                {(allZones.length !== 0  || zoneMsg === "success") && (
                   <>
-                    {<p>{organizationDetails.organizationName} has no registered zone.</p>}
-                  </>
-                ) : (
-                  <>
+                    <p>{allZones?.length} {allZones?.length === 1 ? 'zone' : 'zones'}:</p>
+                    <hr />
                     {allZones?.map((zone) => (
                       <>
                         <div key={zone._id.toString()}>
@@ -142,11 +144,17 @@ const Organization = () => {
                           <p>Organization Name: {zone.organizationId.organizationName}</p>
                           <p>Time Added: {formatDate(zone.createdAt.toString())}</p>
                         </div>
+                        <hr />
                       </>
                     ))}
                   </>
                 )}
+                
               </div>
+
+              {orgUniqueId && (
+                <Zones organizationUniqueId={orgUniqueId} />
+              )}
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={closeModal}>
                   Close

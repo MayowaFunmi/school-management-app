@@ -24,6 +24,6 @@ export const allOrganizationZones = async (orgId: string) => {
         throw new Error(' Organization with uniqueId not found');
     }
 
-    const zones = await Zone.find({ organizationId: org._id })
+    const zones = await Zone.find({ organizationId: org._id }).populate("organizationId")
     return zones;
 }

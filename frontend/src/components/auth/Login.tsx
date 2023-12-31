@@ -4,6 +4,8 @@ import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../../hooks/useTypedSelector';
 import { loginUser } from '../../features/userSlice';
 import Spinner from '../../spinner/Spinner';
+import store from '../../store/store';
+import { clearUserData } from '../../features/adminSlice';
 
 
 const Login: React.FC = () => {
@@ -21,6 +23,7 @@ const Login: React.FC = () => {
 
   const notifyError = (msg: string) => toast.error(msg);
   const notifySuccess = (msg: string) => toast.success(msg);
+	const storedToken = localStorage.getItem("user");
 
   useEffect(() => {
 		if (isAuthenticated) {
@@ -31,7 +34,10 @@ const Login: React.FC = () => {
 		} else if (status === "rejected") {
 			notifyError("Invalid username or password")
 		}
-	}, [isAuthenticated, navigate, message, status])
+		if (!storedToken) {
+      store.dispatch(clearUserData())
+    }
+	}, [isAuthenticated, navigate, message, status, storedToken])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

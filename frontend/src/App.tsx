@@ -10,7 +10,6 @@ import Home from './components/pages/Home';
 import UpdateUserRole from './components/auth/UpdateUserRole';
 import Organization from './components/admin/Organization';
 import OrganizationsList from './components/admin/OrganizationsList';
-import Zones from './components/admin/Zones';
 
 const App: React.FC = () => {
 

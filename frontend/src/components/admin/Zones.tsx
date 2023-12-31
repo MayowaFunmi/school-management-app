@@ -65,7 +65,10 @@ const Zones: React.FC<ZoneProps> = ({ organizationUniqueId }) => {
 				</div>
 
 				<div className="col-12">
-					<button type='submit' className="btn btn-primary">Create Zone</button>
+          {zoneMsg !== "success" ? (
+            <button type='submit' className="btn btn-primary">Create Zone</button>
+          ) : null}
+					
 				</div>
 			</form>
 
