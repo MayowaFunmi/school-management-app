@@ -10,6 +10,7 @@ import Home from './components/pages/Home';
 import UpdateUserRole from './components/auth/UpdateUserRole';
 import Organization from './components/admin/Organization';
 import OrganizationsList from './components/admin/OrganizationsList';
+import OrganizationDetails from './components/admin/OrganizationDetails';
 
 const App: React.FC = () => {
 
@@ -23,6 +24,7 @@ const App: React.FC = () => {
           <Route path="add-role-to-user" element={<UpdateUserRole />} />
           <Route path='create-organization' element={<Organization />} />
           <Route path='show-all-organizations' element={<OrganizationsList />} />
+          <Route path='/organization-details/:organizationId' element={<OrganizationDetails />} />
         </Route>
           <Route path='/signup' element={<SignUp />} />
           <Route path='/login' element={<Login />} />

@@ -26,6 +26,7 @@ const Navbar: React.FC = () => {
 				<Link className="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" to="#">School Management App</Link>
 
 				{isAuthenticated && isSuperAdminRoleExists && <SuperAdminDropdown />}
+				{isAuthenticated && isAdminRoleExists && <AdminDropdown />}
 
 				<nav className="nav ms-auto">
 					{isAuthenticated ? (

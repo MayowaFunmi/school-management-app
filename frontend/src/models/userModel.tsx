@@ -54,5 +54,18 @@ export interface Data {
 	allZoneMsg: string
 }
 
+export interface OrganizationZonesModalProps {
+  isModalOpen: boolean;
+  closeModal: React.MouseEventHandler;
+  allZones: Zone[];
+  zoneMsg: string;
+  org: Organization;
+}
+
+export interface AddZoneModalProps {
+  isModalOpen: boolean;
+  closeModal: React.MouseEventHandler;
+  org: Organization;
+}
 export interface Values { userId: string, roleName: string }
 export interface ZoneValues { organizationUniqueId: string, zoneName: string }

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../hooks/useTypedSelector'
 import { useAuth } from '../../context/AuthContext';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { createOrganization, getAdminOrganizations, getOrganizationZones, resetAllZones } from '../../features/adminSlice';
 import Zones from './Zones';
 import { Organization as UserOrganization } from '../../models/userModel';
 import store from '../../store/store';
 
-const Organization = () => {
+const Organization1 = () => {
 
   const { orgMsg, orgStatus, organizations, checkOrgs, allZones, zoneMsg } = useAppSelector((state) => state.admin);
   const { isAuthenticated, isAdminRoleExists } = useAuth();
@@ -21,7 +21,6 @@ const Organization = () => {
 
   const notifyError = (msg: string) => toast.error(msg);
   const notifySuccess = (msg: string) => toast.success(msg);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (orgStatus === "success") {
@@ -62,8 +61,10 @@ const Organization = () => {
   };
 
   const handleViewDetails  = (org: UserOrganization) => {
-    store.dispatch(resetAllZones());
-    navigate(`/organization-details/${org._id}`, { state: { org } });
+    // reset the state
+    store.dispatch(resetAllZones())
+    setOrganizationDetails(org);
+    setIsModalOpen(true);
   };
 
   const closeModal = () => {
@@ -99,6 +100,7 @@ const Organization = () => {
       </div>
       <hr />
       <h3>Your Organizations</h3>
+      {/* {checkOrgs === "rejected" && <h3>No organization found for this user</h3>} */}
 
       {organizations?.map((org) => (
         <>
@@ -112,8 +114,58 @@ const Organization = () => {
           </div>
         </>
       ))}
+
+      {/* Bootstrap Modal */}
+      {organizationDetails && (
+        <div className={`modal ${isModalOpen ? 'show' : ''}`} tabIndex={-1} role="dialog" style={{ display: isModalOpen ? 'block' : 'none' }}>
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Organization Details For {organizationDetails.organizationName}</h5>
+                <button type="button" className="close" onClick={closeModal} aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                {/* Display organization details in the modal */}
+                <p>Organization Name: {organizationDetails.organizationName}</p>
+                <p>Organization Unique Id: {organizationDetails.organizationUniqueId}</p>
+                <button className='btn btn-info' onClick={() => getZones(organizationDetails.organizationUniqueId)}>List Zones</button> | 
+                <button className='btn btn-info' onClick={() => addZone(organizationDetails.organizationUniqueId)}>Add Zone</button>
+                {(allZones.length !== 0  || zoneMsg === "success") && (
+                  <>
+                    <p>{allZones?.length} {allZones?.length === 1 ? 'zone' : 'zones'}:</p>
+                    <hr />
+                    {allZones?.map((zone) => (
+                      <>
+                        <div key={zone._id.toString()}>
+                          <p>Zone Name: {zone.name}</p>
+                          <p>Organization Unique Id: {zone.organizationId.organizationUniqueId}</p>
+                          <p>Organization Name: {zone.organizationId.organizationName}</p>
+                          <p>Time Added: {formatDate(zone.createdAt.toString())}</p>
+                        </div>
+                        <hr />
+                      </>
+                    ))}
+                  </>
+                )}
+                
+              </div>
+
+              {orgUniqueId && (
+                <Zones organizationUniqueId={orgUniqueId} />
+              )}
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={closeModal}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </React.Fragment>
   )
 }
 
-export default Organization
+export default Organization1

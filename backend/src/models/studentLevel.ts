@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const deptSchema = new mongoose.Schema({
+const levelSchema = new mongoose.Schema({
     name: {
         type: String, required: true
     },
@@ -10,4 +10,4 @@ const deptSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-export const Department = mongoose.model('Department', deptSchema);
+export const StudentLevel = mongoose.model('Level', levelSchema);

@@ -72,17 +72,6 @@ const OrganizationsList: React.FC = () => {
             </div>
             <hr />
           </div>
-
-          {/* {allZones?.map((zone) => (
-            <>
-              <div key={zone._id.toString()}>
-                <p>Zone Name: {zone.name}</p>
-                <p>Organization Unique Id: {zone.organizationId.organizationUniqueId}</p>
-                <p>Organization Name: {zone.organizationId.organizationName}</p>
-                <p>Time Added: {formatDate(zone.createdAt.toString())}</p>
-              </div>
-            </>
-          ))} */}
         </>
       ))}
 
