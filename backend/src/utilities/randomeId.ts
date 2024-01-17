@@ -26,3 +26,7 @@ export const generateUserUniqueId = () => {
 export const generateOrgUniqueId = () => {
     return `ORG-${uniqueId()}`;
 }
+
+export const schoolUniqueId = () => {
+    return `SCH-${uniqueId()}`;
+}
