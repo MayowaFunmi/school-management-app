@@ -2,11 +2,11 @@ import { School } from "models/schoolModel";
 import { schoolUniqueId } from "utilities/randomeId";
 
 interface CreateSchoolInput {
-  organizationUniqueId: string;
-  schoolUniqueId: string;
-  zone: string;
-  name: string;
-  address: string;
+  organizationUniqueId: string
+  schoolUniqueId: string
+  zone: string
+  name: string
+  address: string
 }
 
 export const addSchool = async (schoolData: CreateSchoolInput): Promise<any> => {
